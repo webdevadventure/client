@@ -3,8 +3,7 @@ import Header from "./components/Header.jsx";
 function App() {
   return (
     <div>
-      <Header />
-      initialize the project
+      <Header first="Trang chủ" second="Tin mới" third="Đừng có bị lừa!" />
     </div>
   );
 }
