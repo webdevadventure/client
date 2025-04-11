@@ -1,4 +1,4 @@
-# 🛠️ SET UP THE PROJECT
+## 🛠️ SET UP THE PROJECT
 
 ```
 git clone https://github.com/webdevadventure/client.git
@@ -6,7 +6,7 @@ npm install
 npm run dev
 ```
 
-# 🌵How to push code in one command (in case you have already created the .git directory and pointed to the Github repo)
+## 🌵How to push code in one command (in case you have already created the .git directory and pointed to the Github repo)
 
 ### create deploy.js or deploy.cjs file
 
@@ -73,7 +73,7 @@ or with specific branch
 node deploy.cjs -- --msg "<your commit messages>" br <your branch>
 ```
 
-# 🤝 How to Contribute
+## 🤝 How to Contribute
 
 Your contributions can help enrich this repository! If you have suggestions or resources to add, please follow these steps:
 
