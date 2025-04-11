@@ -1,6 +1,6 @@
 import "./assets/css/App.css";
-import router from "./routers/router";
-import { RouterProvider } from "react-router-dom";
+import router from "./routers/router.jsx";
+import { RouterProvider } from "react-router";
 
 function App() {
   return <RouterProvider router={router} />;
