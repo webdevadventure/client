@@ -70,7 +70,7 @@ node deploy.cjs -- --msg "<your commit messages>"
 or with specific branch
 
 ```
-node deploy.cjs -- --msg "<your commit messages>" br <your branch>
+node deploy.cjs -- --msg "<your commit messages>" --br <your branch>
 ```
 
 ## 🤝 How to Contribute
