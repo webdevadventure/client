@@ -6,7 +6,7 @@ npm install
 npm run dev
 ```
 
-# How to push code in one command
+# How to push code in one command (in case you have already created the .git directory and point to the Github repo)
 
 ### create deploy.js or deploy.cjs file
 
