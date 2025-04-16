@@ -8,7 +8,7 @@ type HeaderProps = {
 };
 
 export const Header: React.FC<HeaderProps> = ({ first, second, third }) => (
-  <div className="flex items-center justify-between px-40 py-7 bg-[#edecfb] shadow-md text-black">
+  <div className="sticky flex items-center justify-between px-40 py-7 bg-[#edecfb] shadow-md text-black">
     {/* Logo */}
     <div className="flex items-center gap-2">
       <img src="/favicon.svg" alt="Trọ Tốt Logo" className="h-20" />

@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <div className="grid grid-cols-[6fr_2fr] gap-40 px-20 pt-10 pb-25 font-Nunito shadow-md">
+    <div className="grid grid-cols-[6fr_2fr] gap-40 px-20 pt-10 pb-25 font-Nunito shadow-md bg-[#edecfb]">
       {/* Left section */}
       <div className="flex flex-col gap-2">
         <div className="mb-1.5 text-xl font-bold">TRỌ TỐT</div>
