@@ -43,5 +43,3 @@ export const Header: React.FC<HeaderProps> = ({ first, second, third }) => (
     </div>
   </div>
 );
-
-export default Header;

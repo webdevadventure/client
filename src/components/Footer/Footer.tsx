@@ -11,7 +11,7 @@ export const Footer: React.FC = () => {
     { name: "Google", url: "https://www.google.com/" },
     { name: "Twitter", url: "https://x.com/" },
     { name: "Instagram", url: "https://www.instagram.com/" },
-    { name: "Linkedin", url: "https://www.linkedin.com/" }, // 👈 sửa từ "LinkedinIn" → "Linkedin"
+    { name: "LinkedinIn", url: "https://www.linkedin.com/" },
   ];
 
   return (
@@ -22,8 +22,8 @@ export const Footer: React.FC = () => {
 
         <div className="mb-1.5">
           Là nền tảng kết nối giữa chủ cho thuê và người thuê nhà, ứng dụng AI
-          để phát hiện các trường hợp cho thuê đáng ngờ, giúp tạo ra môi
-          trường giao dịch an toàn và minh bạch.
+          để phát hiện các trường hợp cho thuê đáng ngờ, giúp tạo ra môi trường
+          giao dịch an toàn và minh bạch.
           <br />
           <br />
           Ho Chi Minh, Vietnam. Since 2025.
@@ -31,7 +31,11 @@ export const Footer: React.FC = () => {
 
         <div className="flex gap-1.5">
           {platformNames.map((platform, index) => (
-            <SocialLink key={index} platform={platform.name} url={platform.url} />
+            <SocialLink
+              key={index}
+              platform={platform.name}
+              url={platform.url}
+            />
           ))}
         </div>
       </div>
