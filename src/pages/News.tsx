@@ -4,7 +4,18 @@ import { Footer } from "../components/Footer/Footer";
 import { Frame } from "../components/Frame";
 import { Filter } from "../components/Filter";
 
-const fakeData = [
+// Define the type for a listing
+interface Listing {
+  title: string;
+  area: string;
+  description: string;
+  type: string;
+  address: string;
+  price: string;
+  image: string;
+}
+
+const fakeData: Listing[] = [
   {
     title: "Cho thuê căn hộ trung tâm Gò Vấp",
     area: "60",
@@ -97,19 +108,22 @@ const fakeData = [
   },
 ];
 
-export const News = () => {
+export const News: React.FC = () => {
   return (
     <div>
       <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
+
       <h1 className="mt-10 mb-6 ml-16 font-Nunito font-bold text-[40px]">
         TIN MỚI
       </h1>
+
       <div className="grid grid-cols-[1fr_auto]">
         <div className="ml-16">
           {fakeData.map((item, idx) => {
             const [prop1, prop2, prop3] = item.description
               .split("|")
               .map((p) => p.trim());
+
             return (
               <Frame
                 key={idx}
