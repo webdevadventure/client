@@ -27,7 +27,7 @@ export const Frame: React.FC<FrameProps> = ({
   const additionalProps = [prop1, prop2, prop3].filter(Boolean).join(" | ");
 
   return (
-    <div className="w-[851px] grid grid-cols-[3fr_7fr] bg-[#fafafa] font-Nunito shadow-lg rounded-lg relative">
+    <div className="w-[851px] grid grid-cols-[3fr_7fr] bg-[#fafafa] font-Nunito shadow-lg rounded-lg relative my-6">
       {/* Picture */}
       <div className="w-[267px] aspect-square overflow-hidden m-4 rounded-lg">
         <img src={picURL} alt={title} className="w-full h-full object-cover" />
