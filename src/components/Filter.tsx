@@ -4,7 +4,7 @@ export const Filter: React.FC = () => {
   return (
     <div>
       <div className="w-full max-w-sm p-4">
-        <h2 className="text-xl font-bold mb-4">BỘ LỌC</h2>
+        <h2 className="text-xl font-bold mb-4">TÌM KIẾM</h2>
 
         {/* Tỉnh/Thành phố */}
         <div className="mb-4">

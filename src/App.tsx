@@ -1,11 +1,11 @@
 import "./assets/css/App.css";
-import { News } from "./pages/News";
+import Blog from "./pages/Blog";
 //import routers from './routers/router'
 //import { RouterProvider } from 'react-router'
 
 function App() {
   //return <RouterProvider router={routers} />
-  return <News />;
+  return <Blog />;
 }
 
 export default App;
