@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type CardProps = {
+  id: string;
   title: string;
   picURL: string;
   price: number | string;
@@ -10,6 +12,7 @@ type CardProps = {
 };
 
 export const Card: React.FC<CardProps> = ({
+  id,
   title,
   picURL,
   price,
@@ -18,9 +21,12 @@ export const Card: React.FC<CardProps> = ({
   type,
 }) => {
   return (
-    <div className="w-full md:w-80 lg:w-96 overflow-hidden font-Nunito">
+    <Link
+      to={`/details/${id}`}
+      className="block w-full max-w-[300px] rounded-xl shadow-md overflow-hidden font-Nunito transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+    >
       {/* Picture */}
-      <div className="w-full aspect-[1/1] overflow-hidden border-[1px] border-black">
+      <div className="w-full h-56 overflow-hidden">
         <img
           src={picURL}
           alt={title ?? ""}
@@ -30,10 +36,8 @@ export const Card: React.FC<CardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex flex-col justify-between items-start font-medium gap-3 mt-5">
-        <div className="font-bold text-3xl truncate overflow-hidden whitespace-nowrap w-full">
-          {title}
-        </div>
+      <div className="flex flex-col justify-between items-start font-medium gap-3 p-4">
+        <div className="font-bold text-xl truncate w-full">{title}</div>
         <div className="font-semibold text-lg">
           <span>{`${price} triệu/tháng`}</span>
           <span className="mx-2">|</span>
@@ -42,10 +46,10 @@ export const Card: React.FC<CardProps> = ({
             <sup>2</sup>
           </span>
         </div>
-        <div className="text-lg text-gray-600">{addr}</div>
-        <div className="text-lg text-gray-500">{type}</div>
+        <div className="text-base text-gray-600">{addr}</div>
+        <div className="text-base text-gray-500">{type}</div>
       </div>
-    </div>
+    </Link>
   );
 };
 
