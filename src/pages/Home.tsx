@@ -185,3 +185,5 @@ const Feature: React.FC<FeatureProps> = ({ icon, title, description }) => {
     </div>
   );
 };
+
+export default Home;

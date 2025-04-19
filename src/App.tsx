@@ -1,11 +1,58 @@
 import "./assets/css/App.css";
+import { Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Login } from "./pages/Login";
+import { SignUp } from "./pages/SignUp";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { TenantProfile } from "./pages/TenantProfile";
+import { LandlordProfile } from "./pages/LandlordProfile";
+import { News } from "./pages/News";
 import Blog from "./pages/Blog";
+import { BlogPage } from "./pages/BlogPage";
+import { Details } from "./pages/Details";
 //import routers from './routers/router'
 //import { RouterProvider } from 'react-router'
 
 function App() {
   //return <RouterProvider router={routers} />
-  return <Blog />;
+  return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/news" element={<News />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:id" element={<BlogPage />} />
+      <Route path="/details/:id" element={<Details />} />
+
+      {/* Auth routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      {/* Protected routes - Có thể thêm PrivateRoute wrapper sau */}
+      <Route path="/profile/tenant" element={<TenantProfile />} />
+      <Route path="/profile/landlord" element={<LandlordProfile />} />
+
+      {/* 404 Page */}
+      <Route
+        path="*"
+        element={
+          <div className="min-h-screen flex flex-col items-center justify-center">
+            <h1 className="text-4xl font-bold mb-4">404</h1>
+            <p className="text-gray-600 mb-4">
+              Trang bạn tìm kiếm không tồn tại
+            </p>
+            <button
+              onClick={() => window.history.back()}
+              className="px-4 py-2 bg-[#D9D9D9] text-black hover:bg-[#c4c4c4] rounded"
+            >
+              Quay lại
+            </button>
+          </div>
+        }
+      />
+    </Routes>
+  );
 }
 
 export default App;

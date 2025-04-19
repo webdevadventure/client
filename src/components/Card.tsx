@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type CardProps = {
+  id: string;
   title: string;
   picURL: string;
   price: number | string;
@@ -10,6 +12,7 @@ type CardProps = {
 };
 
 export const Card: React.FC<CardProps> = ({
+  id,
   title,
   picURL,
   price,
@@ -18,7 +21,10 @@ export const Card: React.FC<CardProps> = ({
   type,
 }) => {
   return (
-    <div className="w-full max-w-[300px] rounded-xl shadow-md overflow-hidden font-Nunito transform transition-transform duration-300 hover:scale-105">
+    <Link
+      to={`/details/${id}`}
+      className="block w-full max-w-[300px] rounded-xl shadow-md overflow-hidden font-Nunito transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+    >
       {/* Picture */}
       <div className="w-full h-56 overflow-hidden">
         <img
@@ -43,7 +49,7 @@ export const Card: React.FC<CardProps> = ({
         <div className="text-base text-gray-600">{addr}</div>
         <div className="text-base text-gray-500">{type}</div>
       </div>
-    </div>
+    </Link>
   );
 };
 

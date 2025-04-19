@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type ArticleProps = {
+  id: string;
   picURL: string;
   title: string;
   date: string;
@@ -8,13 +10,17 @@ type ArticleProps = {
 };
 
 export const Article: React.FC<ArticleProps> = ({
+  id,
   picURL,
   title,
   date,
   author,
 }) => {
   return (
-    <div className="w-[384px] overflow-hidden font-Nunito border-[2px] border-black bg-[#f8f8f8]">
+    <Link
+      to={`/blog/${id}`}
+      className="block w-[384px] overflow-hidden font-Nunito border-[2px] border-black bg-[#f8f8f8] hover:shadow-lg transition-shadow duration-300"
+    >
       {/* Picture */}
       <div className="w-full aspect-[3/2] overflow-hidden">
         <img
@@ -31,7 +37,7 @@ export const Article: React.FC<ArticleProps> = ({
         <div className="text-[12px]">{date}</div>
         <div className="text-[#0A72AD] text-[12px]">{`Author: ${author}`}</div>
       </div>
-    </div>
+    </Link>
   );
 };
 
