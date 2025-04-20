@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 type ArticleProps = {
-  id: string;
+  id?: string;
   picURL: string;
   title: string;
   date: string;
