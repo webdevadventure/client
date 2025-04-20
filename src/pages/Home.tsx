@@ -7,8 +7,10 @@ import { Footer } from "../components/Footer/Footer";
 
 // Define TypeScript interfaces for fake data
 interface FakeData1 {
-  link: string;
+  id: string;
+  key: number;
   title: string;
+  picURL: string;
   price: string;
   area: string;
   addr: string;
@@ -16,57 +18,97 @@ interface FakeData1 {
 }
 
 interface FakeData2 {
-  link: string;
+  id: string;
+  key: number;
   title: string;
+  picURL: string;
   date: string;
   author: string;
 }
 
 const fakeData1: FakeData1[] = [
   {
-    link: "https://plus.unsplash.com/premium_photo-1744805464532-998bee603eae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
+    id: "1",
+    key: 1,
+    title: "Căn hộ cao cấp Vinhomes Central Park",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    price: "15",
+    area: "70",
+    addr: "208 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, Hồ Chí Minh",
+    type: "Căn hộ chung cư",
   },
   {
-    link: "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
+    id: "2",
+    key: 2,
+    title: "Căn hộ The Sun Avenue",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    price: "12",
+    area: "56",
+    addr: "28 Mai Chí Thọ, An Phú, Quận 2, TP. Hồ Chí Minh",
+    type: "Căn hộ chung cư",
   },
   {
-    link: "https://images.unsplash.com/photo-1744278955687-2a0216448268?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
+    id: "3",
+    key: 3,
+    title: "Căn hộ Masteri Thảo Điền",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    price: "14",
+    area: "65",
+    addr: "159 Xa lộ Hà Nội, Thảo Điền, Quận 2, TP. Hồ Chí Minh",
+    type: "Căn hộ chung cư",
+  },
+  {
+    id: "4",
+    key: 4,
+    title: "Căn hộ Saigon Pearl",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    price: "18",
+    area: "85",
+    addr: "92 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, TP. Hồ Chí Minh",
+    type: "Căn hộ chung cư",
   },
 ];
 
 const fakeData2: FakeData2[] = [
   {
-    link: "https://plus.unsplash.com/premium_photo-1744805464532-998bee603eae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    date: "1/4/2025",
-    author: "tunglete",
+    id: "1",
+    key: 1,
+    title: "Kinh nghiệm thuê nhà trọ cho sinh viên",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    date: "20/02/2024",
+    author: "Nguyễn Văn A",
   },
   {
-    link: "https://images.unsplash.com/photo-1744616451172-5f540c944b9b?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Nhà phố ở Tân Bình",
-    date: "2/4/2025",
-    author: "nguyenphat",
+    id: "2",
+    key: 2,
+    title: "Cách tìm nhà trọ giá rẻ tại TP.HCM",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    date: "19/02/2024",
+    author: "Trần Thị B",
   },
   {
-    link: "https://images.unsplash.com/photo-1744723852488-ebb3e2541cca?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Căn hộ cao cấp ở Quận 1",
-    date: "3/4/2025",
-    author: "lethanh",
+    id: "3",
+    key: 3,
+    title: "Top 10 khu vực có giá thuê nhà rẻ nhất TP.HCM",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    date: "18/02/2024",
+    author: "Lê Văn C",
+  },
+  {
+    id: "4",
+    key: 4,
+    title: "Những điều cần lưu ý khi thuê nhà",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    date: "17/02/2024",
+    author: "Phạm Thị D",
   },
 ];
 
@@ -78,15 +120,16 @@ export const Home: React.FC = () => {
       <div className="mt-[40px] ml-24 mr-24 mb-20">
         <h1 className="font-bold font-Nunito text-[46px] mb-5">TIN MỚI</h1>
         <div className="flex justify-between">
-          {fakeData1.map((item, index) => (
+          {fakeData1.map((data) => (
             <Card
-              key={index}
-              title={item.title}
-              picURL={item.link}
-              price={item.price}
-              area={item.area}
-              addr={item.addr}
-              type={item.type}
+              key={data.key}
+              id={data.id}
+              title={data.title}
+              picURL={data.picURL}
+              price={data.price}
+              area={data.area}
+              addr={data.addr}
+              type={data.type}
             />
           ))}
         </div>
@@ -96,13 +139,14 @@ export const Home: React.FC = () => {
           ĐỪNG ĐỂ BỊ LỪA!
         </h1>
         <div className="flex justify-between">
-          {fakeData2.map((item, index) => (
+          {fakeData2.map((data) => (
             <Article
-              key={index}
-              title={item.title}
-              picURL={item.link}
-              date={item.date}
-              author={item.author}
+              key={data.key}
+              id={data.id}
+              title={data.title}
+              picURL={data.picURL}
+              date={data.date}
+              author={data.author}
             />
           ))}
         </div>
