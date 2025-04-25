@@ -11,11 +11,11 @@ import Blog from "./pages/Blog";
 import { BlogPage } from "./pages/BlogPage";
 import { Details } from "./pages/Details";
 import { ChatWidget } from "./components/ChatWidget/ChatWidget";
-import { Chat } from "./pages/Chat";
-
+import ScrollToTop from "./components/ScrolltoTop";
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
@@ -32,7 +32,6 @@ function App() {
         {/* Protected routes - Có thể thêm PrivateRoute wrapper sau */}
         <Route path="/profile/tenant" element={<TenantProfile />} />
         <Route path="/profile/landlord" element={<LandlordProfile />} />
-        <Route path="/chat" element={<Chat />} />
 
         {/* 404 Page */}
         <Route

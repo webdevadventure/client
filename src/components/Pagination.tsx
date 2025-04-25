@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 interface PaginationProps {
   totalPosts: number; // Tổng số bài viết
