@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import { FaChevronUp } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";

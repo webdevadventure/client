@@ -1,11 +1,10 @@
-import React from "react";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer/Footer";
-import { useParams } from "react-router-dom";
+//import { useParams } from "react-router-dom";
 import { FaFacebook, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
 export const BlogPage = () => {
-  const { id } = useParams(); // Get blog post ID from URL
+  //const { id } = useParams(); // Get blog post ID from URL
 
   // TODO: Fetch blog data using id
   const blogData = {

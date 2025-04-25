@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 type FrameProps = {
-  id: string;
+  id?: string;
   title: string;
   picURL: string;
   price: number | string;

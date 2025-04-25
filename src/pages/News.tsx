@@ -283,7 +283,7 @@ const fakeData: Listing[] = [
 
 export const News: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [framePerPage, setFramePerPage] = useState(8);
+  const framePerPage = 8;
   const lastPostIndex = currentPage * framePerPage;
   const firstPostIndex = lastPostIndex - framePerPage;
   const currentData = fakeData.slice(firstPostIndex, lastPostIndex);
