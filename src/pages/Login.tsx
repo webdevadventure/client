@@ -5,12 +5,12 @@ import { Footer } from "../components/Footer/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useAuth } from "../contexts/AuthContext";
-import { LoginData } from "../types/auth";
+import { LoginCredentials } from "../services/auth";
 
 export const Login: React.FC = () => {
   const { login, isLoading, error } = useAuth();
 
-  const [formData, setFormData] = useState<LoginData>({
+  const [formData, setFormData] = useState<LoginCredentials>({
     email: "",
     password: "",
   });
@@ -118,7 +118,7 @@ export const Login: React.FC = () => {
                 disabled={isLoading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
               </Button>
             </div>
           </form>

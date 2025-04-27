@@ -1,110 +1,259 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
 import { HeroSection } from "../components/HeroSection";
 import { Card } from "../components/Card";
 import { Article } from "../components/Article";
 import { Footer } from "../components/Footer/Footer";
+import axios from "axios";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { API_ENDPOINTS } from "@/config/api";
 
-// Define TypeScript interfaces for fake data
-interface FakeData1 {
-  link: string;
+// Define TypeScript interfaces for API data
+interface Listing {
+  id: number;
   title: string;
-  price: string;
-  area: string;
-  addr: string;
-  type: string;
+  price: number;
+  area: number;
+  property_type: string;
+  province_details: {
+    name: string;
+  };
+  district_details: {
+    name: string;
+  };
+  images: {
+    image_url: string;
+  }[];
 }
 
+// Define TypeScript interfaces for fake data
 interface FakeData2 {
-  link: string;
+  id: string;
+  key: number;
   title: string;
+  picURL: string;
   date: string;
   author: string;
 }
 
-const fakeData1: FakeData1[] = [
-  {
-    link: "https://plus.unsplash.com/premium_photo-1744805464532-998bee603eae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
-  },
-  {
-    link: "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
-  },
-  {
-    link: "https://images.unsplash.com/photo-1744278955687-2a0216448268?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    price: "7,5",
-    area: "54",
-    addr: "Q. Gò Vấp, TP. Hồ Chí Minh",
-    type: "Căn hộ/Chung cư",
-  },
-];
-
 const fakeData2: FakeData2[] = [
   {
-    link: "https://plus.unsplash.com/premium_photo-1744805464532-998bee603eae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Chung cư ở Gò Vấp",
-    date: "1/4/2025",
-    author: "tunglete",
+    id: "1",
+    key: 1,
+    title: "Kinh nghiệm thuê nhà trọ cho sinh viên",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    date: "20/02/2024",
+    author: "Nguyễn Văn A",
   },
   {
-    link: "https://images.unsplash.com/photo-1744616451172-5f540c944b9b?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Nhà phố ở Tân Bình",
-    date: "2/4/2025",
-    author: "nguyenphat",
+    id: "2",
+    key: 2,
+    title: "Cách tìm nhà trọ giá rẻ tại TP.HCM",
+    picURL:
+      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
+    date: "19/02/2024",
+    author: "Trần Thị B",
   },
   {
-    link: "https://images.unsplash.com/photo-1744723852488-ebb3e2541cca?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Cho thuê Căn hộ cao cấp ở Quận 1",
-    date: "3/4/2025",
-    author: "lethanh",
+    id: "3",
+    key: 3,
+    title: "Top 10 khu vực có giá thuê nhà rẻ nhất TP.HCM",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    date: "18/02/2024",
+    author: "Lê Văn C",
+  },
+  {
+    id: "4",
+    key: 4,
+    title: "Những điều cần lưu ý khi thuê nhà",
+    picURL:
+      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    date: "17/02/2024",
+    author: "Phạm Thị D",
   },
 ];
 
+const formatPrice = (price: number): string => {
+  const million = price / 1_000_000;
+  return `${million.toFixed(1).replace(/\.0$/, "")}`;
+};
+
+const formatArea = (area: number): string => {
+  return `${parseFloat(area.toString()).toString()}`;
+};
+
+interface ArrowProps {
+  className?: string;
+  onClick?: () => void;
+}
+
 export const Home: React.FC = () => {
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: false,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
+  // Custom arrow components
+  const PrevArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
+    return (
+      <button
+        type="button"
+        className={`!absolute !z-20 !left-0 top-1/2 -translate-y-1/2 !w-14 !h-14 !flex !items-center !justify-center !bg-white !rounded-full !shadow-lg border-2 border-gray-300 hover:!bg-gray-200 transition ${className}`}
+        onClick={onClick}
+        aria-label="Previous"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 32 32"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-8 h-8 text-gray-700"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M20 8l-8 8 8 8"
+          />
+        </svg>
+      </button>
+    );
+  };
+
+  const NextArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
+    return (
+      <button
+        type="button"
+        className={`!absolute !z-20 !right-0 top-1/2 -translate-y-1/2 !w-14 !h-14 !flex !items-center !justify-center !bg-white !rounded-full !shadow-lg border-2 border-gray-300 hover:!bg-gray-200 transition ${className}`}
+        onClick={onClick}
+        aria-label="Next"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 32 32"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-8 h-8 text-gray-700"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 8l8 8-8 8"
+          />
+        </svg>
+      </button>
+    );
+  };
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.LISTINGS);
+        setListings(response.data.results || []);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
+
   return (
     <div>
       <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
       <HeroSection />
-      <div className="mt-[40px] ml-24 mr-24 mb-20">
+      <div className="mt-[40px] ml-24 mr-24 mb-20 relative">
         <h1 className="font-bold font-Nunito text-[46px] mb-5">TIN MỚI</h1>
-        <div className="flex justify-between">
-          {fakeData1.map((item, index) => (
-            <Card
-              key={index}
-              title={item.title}
-              picURL={item.link}
-              price={item.price}
-              area={item.area}
-              addr={item.addr}
-              type={item.type}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="px-8">
+            <Slider
+              {...sliderSettings}
+              prevArrow={<PrevArrow />}
+              nextArrow={<NextArrow />}
+            >
+              {listings.map((listing) => (
+                <div key={listing.id} className="flex flex-col h-full px-3">
+                  <Card
+                    id={listing.id.toString()}
+                    title={listing.title}
+                    picURL={listing.images[0]?.image_url || ""}
+                    price={formatPrice(listing.price)}
+                    area={formatArea(listing.area)}
+                    addr={`${listing.district_details.name}, ${listing.province_details.name}`}
+                    type={listing.property_type}
+                    className="min-h-[350px]"
+                  />
+                </div>
+              ))}
+            </Slider>
+          </div>
+        )}
       </div>
-      <div className="mt-[40px] ml-24 mr-24">
+      <div className="mt-[40px] ml-24 mr-24 relative">
         <h1 className="font-bold font-Nunito text-[46px] mb-5">
           ĐỪNG ĐỂ BỊ LỪA!
         </h1>
-        <div className="flex justify-between">
-          {fakeData2.map((item, index) => (
-            <Article
-              key={index}
-              title={item.title}
-              picURL={item.link}
-              date={item.date}
-              author={item.author}
-            />
-          ))}
+        <div className="px-8">
+          <Slider
+            {...sliderSettings}
+            prevArrow={<PrevArrow />}
+            nextArrow={<NextArrow />}
+          >
+            {fakeData2.map((data) => (
+              <div key={data.key} className="flex flex-col h-full px-3 w-full">
+                <Article
+                  id={data.id}
+                  title={data.title}
+                  picURL={data.picURL}
+                  date={data.date}
+                  author={data.author}
+                  className="min-h-[350px]"
+                />
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
       <div className="py-12">

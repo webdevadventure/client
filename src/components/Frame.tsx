@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 type FrameProps = {
   id?: string;
   title: string;
-  picURL: string;
+  picURL?: string | null;
   price: number | string;
   area: number | string;
   addr: string;

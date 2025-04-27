@@ -1,8 +1,9 @@
-import React from "react";
-import { FaUserCircle, FaSearch } from "react-icons/fa";
+import React, { useState, useRef } from "react";
+import { FaUserCircle, FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { toast } from "sonner";
 
 type HeaderProps = {
   first: string;
@@ -12,7 +13,9 @@ type HeaderProps = {
 
 export const Header: React.FC<HeaderProps> = ({ first, second, third }) => {
   const location = useLocation(); // Hook để lấy thông tin về route hiện tại
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const hideTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Function để kiểm tra xem một route có đang active hay không
   const isActiveRoute = (path: string) => {
@@ -25,6 +28,39 @@ export const Header: React.FC<HeaderProps> = ({ first, second, third }) => {
     return `${baseClass} ${
       isActiveRoute(path) ? "font-bold text-black" : "font-normal text-gray-600"
     }`;
+  };
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (!user) return "";
+    const firstInitial = user.first_name
+      ? user.first_name[0].toUpperCase()
+      : "";
+    const lastInitial = user.last_name ? user.last_name[0].toUpperCase() : "";
+    return `${firstInitial}${lastInitial}`;
+  };
+
+  // Get full name for display
+  const getFullName = () => {
+    if (!user) return "";
+    return `${user.first_name} ${user.last_name}`.trim();
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+    toast.success("Đã đăng xuất", {
+      description: "Bạn đã đăng xuất khỏi hệ thống",
+    });
+  };
+
+  // Dropdown hover handlers with delay
+  const handleDropdownEnter = () => {
+    if (hideTimeout.current) clearTimeout(hideTimeout.current);
+    setShowDropdown(true);
+  };
+  const handleDropdownLeave = () => {
+    hideTimeout.current = setTimeout(() => setShowDropdown(false), 250);
   };
 
   return (
@@ -61,23 +97,45 @@ export const Header: React.FC<HeaderProps> = ({ first, second, third }) => {
           <FaSearch size={20} className="ml-2" />
         </div>
 
-        {/* User Icon/Avatar */}
+        {/* User Icon/Avatar with Dropdown */}
         {isAuthenticated && user ? (
-          <Link
-            to="/profile"
-            className="flex items-center gap-2 hover:text-gray-700"
+          <div
+            className="relative"
+            onMouseEnter={handleDropdownEnter}
+            onMouseLeave={handleDropdownLeave}
           >
-            <Avatar className="h-10 w-10">
-              <AvatarImage src="/default-avatar.png" alt={user.first_name} />
-              <AvatarFallback>
-                {user.first_name[0]}
-                {user.last_name[0]}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm font-medium">
-              {user.first_name} {user.last_name}
-            </span>
-          </Link>
+            <Link
+              to={
+                user.user_type === "landlord"
+                  ? "/profile/landlord"
+                  : "/profile/tenant"
+              }
+              className="flex items-center gap-2 hover:text-gray-700"
+            >
+              <Avatar className="h-10 w-10 bg-blue-500">
+                <AvatarFallback className="bg-blue-500 text-white">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">{getFullName()}</span>
+            </Link>
+
+            {showDropdown && (
+              <div
+                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200"
+                onMouseEnter={handleDropdownEnter}
+                onMouseLeave={handleDropdownLeave}
+              >
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <FaSignOutAlt className="text-gray-500" />
+                  <span>Đăng xuất</span>
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <Link
             to="/login"

@@ -5,12 +5,12 @@ import { Footer } from "../components/Footer/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useAuth } from "../contexts/AuthContext";
-import { RegisterData } from "../types/auth";
+import { RegisterCredentials } from "../services/auth";
+import { AxiosError } from "axios";
 
 export const SignUp: React.FC = () => {
   const { register, isLoading, error } = useAuth();
-  const [formData, setFormData] = useState<RegisterData>({
-    username: "",
+  const [formData, setFormData] = useState<RegisterCredentials>({
     email: "",
     password: "",
     confirm_password: "",
@@ -32,18 +32,13 @@ export const SignUp: React.FC = () => {
       return;
     }
     try {
-      await register({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        confirm_password: formData.confirm_password,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        phone: formData.phone,
-        user_type: formData.user_type,
-      });
-    } catch (error: any) {
-      console.error("Registration error:", error.response?.data);
+      await register(formData);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("Registration error:", error.response?.data);
+      } else {
+        console.error("Registration error:", error);
+      }
     }
   };
 
@@ -69,18 +64,6 @@ export const SignUp: React.FC = () => {
                 <div className="text-sm text-red-700">{error}</div>
               </div>
             )}
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tên đăng nhập</label>
-              <Input
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Nhập tên đăng nhập"
-                className="bg-[#F8F8F8]"
-                required
-              />
-            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -129,6 +112,7 @@ export const SignUp: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Nhập số điện thoại của bạn"
                 className="bg-[#F8F8F8]"
+                required
               />
             </div>
 

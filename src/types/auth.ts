@@ -1,27 +1,16 @@
-export type UserType = "tenant" | "landlord" | "admin";
-export type KYCStatus = "pending" | "verified" | "rejected";
-
 export interface User {
   id: string;
-  username: string;
   email: string;
   first_name: string;
   last_name: string;
-  phone?: string;
-  user_type: UserType;
-  kyc_status: KYCStatus;
-  is_deleted: boolean;
+  user_type: "landlord" | "tenant";
+  kyc_status: string;
 }
 
-export interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  confirm_password: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  user_type: UserType;
+export interface AuthResponse {
+  refresh: string;
+  access: string;
+  user: User;
 }
 
 export interface LoginData {
@@ -29,10 +18,14 @@ export interface LoginData {
   password: string;
 }
 
-export interface AuthResponse {
-  user: User;
-  refresh: string;
-  access: string;
+export interface RegisterData {
+  email: string;
+  password: string;
+  confirm_password: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  user_type: "landlord" | "tenant";
 }
 
 export interface AuthState {
