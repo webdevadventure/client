@@ -1,5 +1,5 @@
 // API Configuration
-export const API_URL = "http://localhost:8000";
+export const API_URL = "https://web-production-fd201.up.railway.app";
 
 // API Endpoints
 export const API_ENDPOINTS = {
