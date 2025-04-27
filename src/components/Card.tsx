@@ -9,6 +9,10 @@ type CardProps = {
   area: number | string;
   addr: string;
   type: string;
+  className?: string;
+  prop1?: string;
+  prop2?: string;
+  prop3?: string;
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -19,11 +23,18 @@ export const Card: React.FC<CardProps> = ({
   area,
   addr,
   type,
+  className = "",
+  prop1,
+  prop2,
+  prop3,
 }) => {
+  // Gộp các thuộc tính bổ sung thành một chuỗi ngăn cách bởi " | "
+  const additionalProps = [prop1, prop2, prop3].filter(Boolean).join(" | ");
+
   return (
     <Link
       to={`/details/${id}`}
-      className="block w-full max-w-[300px] rounded-xl shadow-md overflow-hidden font-Nunito transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+      className={`block w-full max-w-[300px] rounded-xl shadow-md overflow-hidden font-Nunito transform transition-transform duration-300 hover:scale-105 hover:shadow-lg ${className}`}
     >
       {/* Picture */}
       <div className="w-full h-56 overflow-hidden">
@@ -46,6 +57,9 @@ export const Card: React.FC<CardProps> = ({
             <sup>2</sup>
           </span>
         </div>
+        {additionalProps && (
+          <div className="text-sm text-gray-600">{additionalProps}</div>
+        )}
         <div className="text-base text-gray-600">{addr}</div>
         <div className="text-base text-gray-500">{type}</div>
       </div>

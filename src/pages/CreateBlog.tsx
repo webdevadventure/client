@@ -1,146 +1,131 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { blogService, BlogCategory } from "../services/blog";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { toast } from "sonner";
 
-export const CreateBlog = () => {
+const CreateBlog: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
-  const [newCategory, setNewCategory] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [category, setCategory] = useState("");
+  const [featuredImage, setFeaturedImage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Bạn cần đăng nhập để tạo bài viết!");
+      navigate("/login");
+      return;
     }
-  };
+    const fetchCategories = async () => {
+      const cats = await blogService.getCategories();
+      setCategories(cats);
+    };
+    fetchCategories();
+  }, [isAuthenticated, navigate]);
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() && !categories.includes(newCategory.trim())) {
-      setCategories([...categories, newCategory.trim()]);
-      setNewCategory("");
-    }
-  };
-
-  const handleRemoveCategory = (category: string) => {
-    setCategories(categories.filter((c) => c !== category));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement blog post submission
-    console.log({ title, content, categories, image });
-    navigate("/blog");
+    if (!title || !content || !category) {
+      toast.error("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await blogService.createPost({
+        title,
+        content,
+        category,
+        featured_image: featuredImage,
+      });
+      if (res) {
+        toast.success("Tạo bài viết thành công!");
+        navigate("/blog");
+      } else {
+        toast.error("Tạo bài viết thất bại!");
+      }
+    } catch {
+      toast.error("Tạo bài viết thất bại!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen font-Nunito">
-      <Header first="Trang chủ" second="Blog" third="Viết bài" />
-
-      <main className="max-w-[800px] mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Viết bài blog mới</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Tiêu đề</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nhập tiêu đề bài viết"
-              required
-            />
-          </div>
-
-          {/* Categories */}
-          <div className="space-y-2">
-            <Label>Danh mục</Label>
-            <div className="flex gap-2">
+    <div className="min-h-screen font-Nunito bg-[#f7f7fb] flex flex-col">
+      <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
+      <main className="flex-grow flex justify-center items-center my-7">
+        <div className="bg-white rounded-xl shadow-lg p-10 w-full max-w-2xl">
+          <h1 className="text-3xl font-bold mb-6 text-center">
+            Tạo bài viết mới
+          </h1>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label className="block font-medium mb-1">
+                Tiêu đề <span className="text-red-500">*</span>
+              </label>
               <Input
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="Thêm danh mục"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
               />
-              <Button type="button" onClick={handleAddCategory}>
-                Thêm
-              </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {categories.map((category) => (
-                <div
-                  key={category}
-                  className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2"
-                >
-                  <span>{category}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCategory(category)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+            <div>
+              <label className="block font-medium mb-1">
+                Danh mục <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="">Chọn danh mục</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
-
-          {/* Featured Image */}
-          <div className="space-y-2">
-            <Label>Ảnh bìa</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              required
-            />
-            {imagePreview && (
-              <div className="mt-2">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="max-h-[200px] rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="space-y-2">
-            <Label htmlFor="content">Nội dung</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Viết nội dung bài viết của bạn..."
-              className="min-h-[300px]"
-              required
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end gap-4">
+            <div>
+              <label className="block font-medium mb-1">
+                Ảnh minh họa (URL)
+              </label>
+              <Input
+                value={featuredImage}
+                onChange={(e) => setFeaturedImage(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">
+                Nội dung <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                className="w-full border rounded px-3 py-2 min-h-[150px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+              />
+            </div>
             <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/blog")}
+              type="submit"
+              className="w-full bg-blue-600 text-white text-lg font-semibold rounded-lg py-2"
+              disabled={loading}
             >
-              Hủy
+              {loading ? "Đang đăng..." : "Đăng bài"}
             </Button>
-            <Button type="submit">Đăng bài</Button>
-          </div>
-        </form>
+          </form>
+        </div>
       </main>
-
       <Footer />
     </div>
   );

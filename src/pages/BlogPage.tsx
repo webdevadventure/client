@@ -1,48 +1,102 @@
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer/Footer";
-//import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FaFacebook, FaLinkedinIn, FaTwitter } from "react-icons/fa";
+import { useEffect, useState } from "react";
+
+type BlogData = {
+  title: string;
+  author: string;
+  date: string;
+  readTime: string;
+  categories: string[];
+  image: string;
+  content: string;
+};
 
 export const BlogPage = () => {
-  //const { id } = useParams(); // Get blog post ID from URL
+  const { id } = useParams(); // Get blog post ID from URL
+  const [blogData, setBlogData] = useState<BlogData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // TODO: Fetch blog data using id
-  const blogData = {
-    title: "10 điều cần lưu ý khi thuê trọ cho sinh viên",
-    author: "Nguyễn Văn A",
-    date: "20 tháng 3, 2024",
-    readTime: "5 phút đọc",
-    categories: ["Mẹo thuê trọ", "Kinh nghiệm"],
-    image: "/blog-1.jpg",
-    content: `
-      <p>Thuê trọ là một trong những vấn đề quan trọng đối với sinh viên. Bài viết này sẽ chia sẻ những kinh nghiệm quý báu giúp bạn tìm được phòng trọ ưng ý...</p>
-      
-      <h2>1. Xác định ngân sách</h2>
-      <p>Trước khi bắt đầu tìm phòng trọ, bạn cần xác định rõ khả năng tài chính của mình. Hãy cân nhắc các chi phí như: tiền thuê nhà, tiền điện nước, tiền internet, và các chi phí phát sinh khác.</p>
-      
-      <h2>2. Khảo sát khu vực</h2>
-      <p>Nên tìm hiểu kỹ về khu vực bạn dự định thuê trọ. Đặc biệt chú ý đến:</p>
-      <ul>
-        <li>Khoảng cách đến trường học</li>
-        <li>An ninh khu vực</li>
-        <li>Các tiện ích xung quanh</li>
-        <li>Phương tiện di chuyển</li>
-      </ul>
-      
-      <h2>3. Kiểm tra cơ sở vật chất</h2>
-      <p>Đừng quên kiểm tra kỹ các vấn đề sau:</p>
-      <ul>
-        <li>Hệ thống điện, nước</li>
-        <li>Tình trạng tường, trần nhà</li>
-        <li>Nhà vệ sinh</li>
-        <li>Nơi để xe</li>
-      </ul>
-    `,
-  };
+  useEffect(() => {
+    // TODO: Replace with actual API call
+    const fetchBlogData = async () => {
+      try {
+        // Simulating API call
+        const mockData: BlogData = {
+          title: "10 điều cần lưu ý khi thuê trọ cho sinh viên",
+          author: "Nguyễn Văn A",
+          date: "20 tháng 3, 2024",
+          readTime: "5 phút đọc",
+          categories: ["Mẹo thuê trọ", "Kinh nghiệm"],
+          image: "/blog-1.jpg",
+          content: `
+            <p>Thuê trọ là một trong những vấn đề quan trọng đối với sinh viên. Bài viết này sẽ chia sẻ những kinh nghiệm quý báu giúp bạn tìm được phòng trọ ưng ý...</p>
+            
+            <h2>1. Xác định ngân sách</h2>
+            <p>Trước khi bắt đầu tìm phòng trọ, bạn cần xác định rõ khả năng tài chính của mình. Hãy cân nhắc các chi phí như: tiền thuê nhà, tiền điện nước, tiền internet, và các chi phí phát sinh khác.</p>
+            
+            <h2>2. Khảo sát khu vực</h2>
+            <p>Nên tìm hiểu kỹ về khu vực bạn dự định thuê trọ. Đặc biệt chú ý đến:</p>
+            <ul>
+              <li>Khoảng cách đến trường học</li>
+              <li>An ninh khu vực</li>
+              <li>Các tiện ích xung quanh</li>
+              <li>Phương tiện di chuyển</li>
+            </ul>
+            
+            <h2>3. Kiểm tra cơ sở vật chất</h2>
+            <p>Đừng quên kiểm tra kỹ các vấn đề sau:</p>
+            <ul>
+              <li>Hệ thống điện, nước</li>
+              <li>Tình trạng tường, trần nhà</li>
+              <li>Nhà vệ sinh</li>
+              <li>Nơi để xe</li>
+            </ul>
+          `,
+        };
+
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setBlogData(mockData);
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header first="Trang chủ" second="Tin mới" third="Đang tải..." />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-xl">Đang tải bài viết...</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!blogData) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header first="Trang chủ" second="Tin mới" third="Không tìm thấy" />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-xl">Không tìm thấy bài viết</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
+      <Header first="Trang chủ" second="Tin mới" third={blogData.title} />
 
       <main className="flex-grow px-40 py-16 font-Nunito">
         {/* Blog Header */}

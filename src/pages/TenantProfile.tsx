@@ -2,14 +2,53 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { API_ENDPOINTS } from "../config/api";
 
 export const TenantProfile = () => {
+  const navigate = useNavigate();
+  const { user, accessToken } = useAuth();
+
+  // State cho các trường cần gửi API
+  const [firstName, setFirstName] = useState(user?.first_name || "");
+  const [lastName, setLastName] = useState(user?.last_name || "");
+  const [phone, setPhone] = useState("");
+  // State cho các trường UI (không gửi API)
+  const [ward, setWard] = useState("");
+  const [district, setDistrict] = useState("");
+  const [province, setProvince] = useState("");
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    try {
+      await axios.patch(
+        API_ENDPOINTS.USER_DETAIL(user.id),
+        {
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      toast.success("Cập nhật thành công!");
+    } catch {
+      toast.error("Cập nhật thất bại. Vui lòng thử lại!");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
@@ -48,51 +87,88 @@ export const TenantProfile = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h2 className="text-xl font-semibold">Anh Liêm</h2>
-                <Button variant="outline" className="w-full">
+                <h2 className="text-xl font-semibold">
+                  {user ? `${user.first_name} ${user.last_name}` : "Loading..."}
+                </h2>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/kyc-request")}
+                >
                   Xác minh danh tính
                 </Button>
               </div>
 
               {/* Form Section */}
               <div className="flex-grow">
-                <form className="grid grid-cols-3 gap-6">
+                <form className="grid grid-cols-3 gap-6" onSubmit={handleSave}>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Họ</label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Tên</label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Số điện thoại</label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Phường/Xã</label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={ward}
+                      onChange={(e) => setWard(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Quận/Huyện</label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">
                       Tỉnh/Thành phố
                     </label>
-                    <Input defaultValue="" className="bg-[#F8F8F8]" />
+                    <Input
+                      value={province}
+                      onChange={(e) => setProvince(e.target.value)}
+                      className="bg-[#F8F8F8]"
+                    />
                   </div>
                   <div className="space-y-2 col-span-3">
                     <label className="text-sm font-medium">Email</label>
-                    <Input defaultValue="" className="w-1/3 bg-[#F8F8F8]" />
+                    <Input
+                      value={user?.email || ""}
+                      className="w-1/3 bg-[#F8F8F8]"
+                      disabled
+                    />
+                  </div>
+                  <div className="col-span-3 mt-6 flex justify-end">
+                    <Button
+                      type="submit"
+                      className="bg-[#D9D9D9] text-black hover:bg-[#c4c4c4] w-32"
+                    >
+                      LƯU
+                    </Button>
                   </div>
                 </form>
-                <div className="mt-6 flex justify-end">
-                  <Button className="bg-[#D9D9D9] text-black hover:bg-[#c4c4c4] w-32">
-                    LƯU
-                  </Button>
-                </div>
               </div>
             </div>
           </TabsContent>

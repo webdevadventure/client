@@ -5,15 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
+import { listingService } from "../services/listing";
+import { toast, Toaster } from "sonner";
 
 interface ListingFormData {
   title: string;
   price: string;
   area: string;
-  address: string;
-  type: string;
+  province: string;
+  district: string;
+  ward: string;
+  street: string;
+  specific_address: string;
+  property_type: "room" | "apartment" | "house";
   description: string;
-  images: File[];
+  imageUrls: string[];
 }
 
 export const CreateListing = () => {
@@ -22,49 +28,86 @@ export const CreateListing = () => {
     title: "",
     price: "",
     area: "",
-    address: "",
-    type: "",
+    province: "",
+    district: "",
+    ward: "",
+    street: "",
+    specific_address: "",
+    property_type: "room",
     description: "",
-    images: [],
+    imageUrls: [],
   });
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageInput, setImageInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setFormData((prev) => ({ ...prev, images: [...prev.images, ...files] }));
-
-      // Create preview URLs
-      const newPreviews = files.map((file) => URL.createObjectURL(file));
-      setImagePreviews((prev) => [...prev, ...newPreviews]);
+  const handleAddImageUrl = () => {
+    if (imageInput.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        imageUrls: [...prev.imageUrls, imageInput.trim()],
+      }));
+      setImageInput("");
     }
   };
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImageUrl = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index),
     }));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement listing submission
-    console.log(formData);
-    navigate("/details"); // Navigate to details page for additional information
+    if (
+      !formData.title.trim() ||
+      !formData.price.trim() ||
+      !formData.area.trim() ||
+      !formData.specific_address.trim() ||
+      !formData.description.trim()
+    ) {
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const listingData = {
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        area: parseFloat(formData.area),
+        property_type: formData.property_type,
+        province: parseInt(formData.province),
+        district: parseInt(formData.district),
+        ward: parseInt(formData.ward),
+        street: parseInt(formData.street),
+        specific_address: formData.specific_address,
+        uploaded_images: formData.imageUrls,
+        //status: "pending",
+      };
+      await listingService.createListing(listingData);
+      toast.success("Đăng tin thành công!");
+      navigate("/profile/landlord");
+    } catch {
+      toast.error("Có lỗi xảy ra khi đăng tin. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen font-Nunito">
-      <Header first="Trang chủ" second="Đăng tin" third="Thông tin cơ bản" />
+      <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
+      <Toaster position="top-right" />
 
       <main className="max-w-[800px] mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Đăng tin cho thuê nhà trọ</h1>
@@ -111,28 +154,84 @@ export const CreateListing = () => {
             </div>
           </div>
 
-          {/* Address */}
+          {/* Property Type */}
           <div className="space-y-2">
-            <Label htmlFor="address">Địa chỉ</Label>
-            <Input
-              id="address"
-              name="address"
-              value={formData.address}
+            <Label htmlFor="property_type">Loại hình</Label>
+            <select
+              id="property_type"
+              name="property_type"
+              value={formData.property_type}
               onChange={handleInputChange}
-              placeholder="VD: 123 Nguyễn Văn A, P.1, Q.1, TP.HCM"
+              className="w-full p-2 border rounded-md"
               required
-            />
+            >
+              <option value="room">Phòng trọ</option>
+              <option value="apartment">Căn hộ</option>
+              <option value="house">Nhà nguyên căn</option>
+            </select>
           </div>
 
-          {/* Type */}
+          {/* Location Fields */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="province">Tỉnh/Thành phố</Label>
+              <Input
+                id="province"
+                name="province"
+                type="number"
+                value={formData.province}
+                onChange={handleInputChange}
+                placeholder="ID Tỉnh/Thành phố"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="district">Quận/Huyện</Label>
+              <Input
+                id="district"
+                name="district"
+                type="number"
+                value={formData.district}
+                onChange={handleInputChange}
+                placeholder="ID Quận/Huyện"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ward">Phường/Xã</Label>
+              <Input
+                id="ward"
+                name="ward"
+                type="number"
+                value={formData.ward}
+                onChange={handleInputChange}
+                placeholder="ID Phường/Xã"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="street">Đường</Label>
+              <Input
+                id="street"
+                name="street"
+                type="number"
+                value={formData.street}
+                onChange={handleInputChange}
+                placeholder="ID Đường"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Specific Address */}
           <div className="space-y-2">
-            <Label htmlFor="type">Loại hình</Label>
+            <Label htmlFor="specific_address">Địa chỉ cụ thể</Label>
             <Input
-              id="type"
-              name="type"
-              value={formData.type}
+              id="specific_address"
+              name="specific_address"
+              value={formData.specific_address}
               onChange={handleInputChange}
-              placeholder="VD: Phòng trọ, Căn hộ mini, Chung cư"
+              placeholder="Số 123, Đường ABC, Phường XYZ"
               required
             />
           </div>
@@ -145,34 +244,37 @@ export const CreateListing = () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Mô tả chi tiết về phòng trọ của bạn..."
-              className="w-full min-h-[100px] p-2 border rounded-md"
+              className="w-full p-2 border rounded-md min-h-[100px]"
+              placeholder="Mô tả chi tiết về phòng trọ, căn hộ..."
               required
             />
           </div>
 
-          {/* Images */}
+          {/* Image URLs */}
           <div className="space-y-2">
-            <Label>Hình ảnh</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageChange}
-              required
-            />
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative">
+            <Label>Ảnh (URL)</Label>
+            <div className="flex gap-2">
+              <Input
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+              />
+              <Button type="button" onClick={handleAddImageUrl}>
+                Thêm
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {formData.imageUrls.map((url, idx) => (
+                <div key={idx} className="relative group">
                   <img
-                    src={preview}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
+                    src={url}
+                    alt="listing"
+                    className="w-24 h-16 object-cover rounded border"
                   />
                   <button
                     type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                    onClick={() => handleRemoveImageUrl(idx)}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs opacity-80 group-hover:opacity-100"
                   >
                     ×
                   </button>
@@ -181,20 +283,15 @@ export const CreateListing = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/")}
-            >
-              Hủy
-            </Button>
-            <Button type="submit">Tiếp tục</Button>
-          </div>
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 text-white text-lg font-semibold rounded-lg py-2"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Đang đăng..." : "Đăng tin"}
+          </Button>
         </form>
       </main>
-
       <Footer />
     </div>
   );

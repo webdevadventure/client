@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthState, User, LoginData, RegisterData } from "../types/auth";
-import authApi from "../services/auth";
+import { AuthState, LoginData, RegisterData } from "../types/auth";
+import { authService } from "../services/auth";
 
 interface AuthContextType extends AuthState {
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,25 +24,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     error: null,
   });
 
+  // Debug initial state
+  useEffect(() => {
+    console.log("Initial auth state:", state);
+  }, []);
+
   useEffect(() => {
     const initAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken");
 
+      console.log("Checking tokens:", { accessToken, refreshToken });
+
       if (accessToken && refreshToken) {
         try {
           // Verify token and get user info
-          const response = await authApi.refreshToken(refreshToken);
+          await authService.refreshAccessToken();
           setState((prev) => ({
             ...prev,
-            accessToken: response.access,
+            accessToken,
             isAuthenticated: true,
             isLoading: false,
           }));
+          console.log("Authentication successful");
         } catch (error) {
           // Token invalid, clear storage
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
+          console.error("Authentication failed:", error);
+          authService.logout();
           setState((prev) => ({
             ...prev,
             isAuthenticated: false,
@@ -50,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }));
         }
       } else {
+        console.log("No tokens found, user is not authenticated");
         setState((prev) => ({
           ...prev,
           isLoading: false,
@@ -63,10 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (data: LoginData) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const response = await authApi.login(data);
-
-      localStorage.setItem("accessToken", response.access);
-      localStorage.setItem("refreshToken", response.refresh);
+      const response = await authService.login(data);
 
       setState((prev) => ({
         ...prev,
@@ -78,10 +84,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }));
 
       navigate("/");
-    } catch (error: any) {
+    } catch {
       setState((prev) => ({
         ...prev,
-        error: error.response?.data?.error || "Đăng nhập thất bại!",
+        error: "Đăng nhập thất bại!",
         isLoading: false,
       }));
     }
@@ -90,10 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const register = async (data: RegisterData) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const response = await authApi.register(data);
-
-      localStorage.setItem("accessToken", response.access);
-      localStorage.setItem("refreshToken", response.refresh);
+      const response = await authService.register(data);
 
       setState((prev) => ({
         ...prev,
@@ -105,57 +108,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }));
 
       navigate("/");
-    } catch (error: any) {
-      console.error("Registration error:", error.response?.data);
-
-      // Xử lý các loại lỗi cụ thể
-      let errorMessage = "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.";
-      const errorData = error.response?.data;
-
-      if (errorData) {
-        if (errorData.detail) {
-          errorMessage = errorData.detail;
-        } else if (typeof errorData === "object") {
-          // Lấy thông báo lỗi đầu tiên từ bất kỳ trường nào
-          const firstError = Object.entries(errorData).find(
-            ([_, value]) => Array.isArray(value) && value.length > 0,
-          );
-          if (firstError) {
-            const [field, messages] = firstError;
-            errorMessage = `${field}: ${messages[0]}`;
-          }
-        }
-      }
-
+    } catch {
+      console.error("Registration failed");
       setState((prev) => ({
         ...prev,
-        error: errorMessage,
+        error: "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.",
         isLoading: false,
       }));
-      throw error;
     }
   };
 
-  const logout = async () => {
-    try {
-      if (state.refreshToken) {
-        await authApi.logout(state.refreshToken);
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      setState({
-        user: null,
-        accessToken: null,
-        refreshToken: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-      });
-      navigate("/login");
-    }
+  const logout = () => {
+    authService.logout();
+    setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+    });
+    navigate("/login");
   };
 
   return (

@@ -1,22 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
 import { HeroSection } from "../components/HeroSection";
 import { Card } from "../components/Card";
 import { Article } from "../components/Article";
 import { Footer } from "../components/Footer/Footer";
+import axios from "axios";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { API_ENDPOINTS } from "@/config/api";
 
-// Define TypeScript interfaces for fake data
-interface FakeData1 {
-  id: string;
-  key: number;
+// Define TypeScript interfaces for API data
+interface Listing {
+  id: number;
   title: string;
-  picURL: string;
-  price: string;
-  area: string;
-  addr: string;
-  type: string;
+  price: number;
+  area: number;
+  property_type: string;
+  province_details: {
+    name: string;
+  };
+  district_details: {
+    name: string;
+  };
+  images: {
+    image_url: string;
+  }[];
 }
 
+// Define TypeScript interfaces for fake data
 interface FakeData2 {
   id: string;
   key: number;
@@ -25,53 +37,6 @@ interface FakeData2 {
   date: string;
   author: string;
 }
-
-const fakeData1: FakeData1[] = [
-  {
-    id: "1",
-    key: 1,
-    title: "Căn hộ cao cấp Vinhomes Central Park",
-    picURL:
-      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
-    price: "15",
-    area: "70",
-    addr: "208 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, Hồ Chí Minh",
-    type: "Căn hộ chung cư",
-  },
-  {
-    id: "2",
-    key: 2,
-    title: "Căn hộ The Sun Avenue",
-    picURL:
-      "https://file4.batdongsan.com.vn/crop/393x222/2023/10/04/20231004160802-1e5e_wm.jpg",
-    price: "12",
-    area: "56",
-    addr: "28 Mai Chí Thọ, An Phú, Quận 2, TP. Hồ Chí Minh",
-    type: "Căn hộ chung cư",
-  },
-  {
-    id: "3",
-    key: 3,
-    title: "Căn hộ Masteri Thảo Điền",
-    picURL:
-      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    price: "14",
-    area: "65",
-    addr: "159 Xa lộ Hà Nội, Thảo Điền, Quận 2, TP. Hồ Chí Minh",
-    type: "Căn hộ chung cư",
-  },
-  {
-    id: "4",
-    key: 4,
-    title: "Căn hộ Saigon Pearl",
-    picURL:
-      "https://images.unsplash.com/photo-1744080213179-d4e58780ec5a?q=80&w=1877&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    price: "18",
-    area: "85",
-    addr: "92 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, TP. Hồ Chí Minh",
-    type: "Căn hộ chung cư",
-  },
-];
 
 const fakeData2: FakeData2[] = [
   {
@@ -112,43 +77,183 @@ const fakeData2: FakeData2[] = [
   },
 ];
 
+const formatPrice = (price: number): string => {
+  const million = price / 1_000_000;
+  return `${million.toFixed(1).replace(/\.0$/, "")}`;
+};
+
+const formatArea = (area: number): string => {
+  return `${parseFloat(area.toString()).toString()}`;
+};
+
+interface ArrowProps {
+  className?: string;
+  onClick?: () => void;
+}
+
 export const Home: React.FC = () => {
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: false,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
+  // Custom arrow components
+  const PrevArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
+    return (
+      <button
+        type="button"
+        className={`!absolute !z-20 !left-0 top-1/2 -translate-y-1/2 !w-14 !h-14 !flex !items-center !justify-center !bg-white !rounded-full !shadow-lg border-2 border-gray-300 hover:!bg-gray-200 transition ${className}`}
+        onClick={onClick}
+        aria-label="Previous"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 32 32"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-8 h-8 text-gray-700"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M20 8l-8 8 8 8"
+          />
+        </svg>
+      </button>
+    );
+  };
+
+  const NextArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
+    return (
+      <button
+        type="button"
+        className={`!absolute !z-20 !right-0 top-1/2 -translate-y-1/2 !w-14 !h-14 !flex !items-center !justify-center !bg-white !rounded-full !shadow-lg border-2 border-gray-300 hover:!bg-gray-200 transition ${className}`}
+        onClick={onClick}
+        aria-label="Next"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 32 32"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-8 h-8 text-gray-700"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 8l8 8-8 8"
+          />
+        </svg>
+      </button>
+    );
+  };
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.LISTINGS);
+        setListings(response.data.results || []);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
+
   return (
     <div>
       <Header first="Trang chủ" second="Tin mới" third="Đừng để bị lừa!" />
       <HeroSection />
-      <div className="mt-[40px] ml-24 mr-24 mb-20">
+      <div className="mt-[40px] ml-24 mr-24 mb-20 relative">
         <h1 className="font-bold font-Nunito text-[46px] mb-5">TIN MỚI</h1>
-        <div className="flex justify-between">
-          {fakeData1.map((data) => (
-            <Card
-              key={data.key}
-              id={data.id}
-              title={data.title}
-              picURL={data.picURL}
-              price={data.price}
-              area={data.area}
-              addr={data.addr}
-              type={data.type}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="px-8">
+            <Slider
+              {...sliderSettings}
+              prevArrow={<PrevArrow />}
+              nextArrow={<NextArrow />}
+            >
+              {listings.map((listing) => (
+                <div key={listing.id} className="flex flex-col h-full px-3">
+                  <Card
+                    id={listing.id.toString()}
+                    title={listing.title}
+                    picURL={listing.images[0]?.image_url || ""}
+                    price={formatPrice(listing.price)}
+                    area={formatArea(listing.area)}
+                    addr={`${listing.district_details.name}, ${listing.province_details.name}`}
+                    type={listing.property_type}
+                    className="min-h-[350px]"
+                  />
+                </div>
+              ))}
+            </Slider>
+          </div>
+        )}
       </div>
-      <div className="mt-[40px] ml-24 mr-24">
+      <div className="mt-[40px] ml-24 mr-24 relative">
         <h1 className="font-bold font-Nunito text-[46px] mb-5">
           ĐỪNG ĐỂ BỊ LỪA!
         </h1>
-        <div className="flex justify-between">
-          {fakeData2.map((data) => (
-            <Article
-              key={data.key}
-              id={data.id}
-              title={data.title}
-              picURL={data.picURL}
-              date={data.date}
-              author={data.author}
-            />
-          ))}
+        <div className="px-8">
+          <Slider
+            {...sliderSettings}
+            prevArrow={<PrevArrow />}
+            nextArrow={<NextArrow />}
+          >
+            {fakeData2.map((data) => (
+              <div key={data.key} className="flex flex-col h-full px-3 w-full">
+                <Article
+                  id={data.id}
+                  title={data.title}
+                  picURL={data.picURL}
+                  date={data.date}
+                  author={data.author}
+                  className="min-h-[350px]"
+                />
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
       <div className="py-12">

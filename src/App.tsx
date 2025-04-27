@@ -12,9 +12,17 @@ import { BlogPage } from "./pages/BlogPage";
 import { Details } from "./pages/Details";
 import { ChatWidget } from "./components/ChatWidget/ChatWidget";
 import ScrollToTop from "./components/ScrolltoTop";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LandlordProtectedRoute from "./components/LandlordProtectedRoute";
+import KYCRequest from "./pages/KYCRequest";
+import CreateListing from "./pages/CreateListing";
+import { Toaster } from "sonner";
+import CreateBlog from "./pages/CreateBlog";
+
 function App() {
   return (
     <>
+      <Toaster position="top-right" />
       <ScrollToTop />
       <Routes>
         {/* Public routes */}
@@ -23,15 +31,46 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogPage />} />
         <Route path="/details/:id" element={<Details />} />
+        <Route path="/blog/create" element={<CreateBlog />} />
 
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/kyc-request"
+          element={
+            <ProtectedRoute>
+              <KYCRequest />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Protected routes - Có thể thêm PrivateRoute wrapper sau */}
-        <Route path="/profile/tenant" element={<TenantProfile />} />
-        <Route path="/profile/landlord" element={<LandlordProfile />} />
+        {/* Protected routes */}
+        <Route
+          path="/profile/tenant"
+          element={
+            <ProtectedRoute>
+              <TenantProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/landlord"
+          element={
+            <ProtectedRoute>
+              <LandlordProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-listing"
+          element={
+            <LandlordProtectedRoute>
+              <CreateListing />
+            </LandlordProtectedRoute>
+          }
+        />
 
         {/* 404 Page */}
         <Route
