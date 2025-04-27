@@ -38,7 +38,7 @@ export const Frame: React.FC<FrameProps> = ({
         {/* Picture */}
         <div className="w-[267px] aspect-square overflow-hidden m-4 rounded-lg">
           <img
-            src={picURL}
+            src={picURL || ""}
             alt={title}
             className="w-full h-full object-cover"
           />
