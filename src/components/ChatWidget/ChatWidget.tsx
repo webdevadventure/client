@@ -28,7 +28,6 @@ const activeChats = [
 
 export const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeChat, setActiveChat] = useState<string | null>(null);
   const location = useLocation();
 
   // Don't render anything if we're on the chat page
@@ -36,8 +35,7 @@ export const ChatWidget = () => {
     return null;
   }
 
-  const handleAvatarClick = (chatId: string) => {
-    setActiveChat(chatId);
+  const handleAvatarClick = () => {
     setIsOpen(true);
   };
 
@@ -48,7 +46,7 @@ export const ChatWidget = () => {
         {activeChats.slice(0, 3).map((chat) => (
           <button
             key={chat.id}
-            onClick={() => handleAvatarClick(chat.id)}
+            onClick={handleAvatarClick}
             className="relative group"
           >
             <img
@@ -86,7 +84,6 @@ export const ChatWidget = () => {
           <ChatBox
             onClose={() => {
               setIsOpen(false);
-              setActiveChat(null);
             }}
           />
         </div>
